@@ -1,6 +1,6 @@
-# YrishUtils，安卓常用工具类整理
+# YrishUtils，安卓常见问题处理集合及工具类
 
-|--Activity不允许横竖屏切换
+--Activity不允许横竖屏切换
 
 |--Activity常用小技巧
 
