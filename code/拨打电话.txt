@@ -1,0 +1,53 @@
+//有4种方式可以实现 内部类 匿名内部类   按钮添加点击事件...
+
+
+public class MainActivity extends Activity {
+	private EditText et_phone;
+	private Button bt_dail;
+	/**
+	 * activity创建的时候调用此方法
+	 */
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //设置activity显示的内容
+        setContentView(R.layout.miphone_ui);
+        //寻找edittext 界面初始化的时候寻找空间  避免多次查询
+        et_phone=(EditText) findViewById(R.id.et_phone);
+        //查找到关联的按钮
+        bt_dail=(Button) this.findViewById(R.id.bt_dail);
+        //方法一: 给按钮注册监听事件的监听器  1
+//        bt_dail.setOnClickListener( new MyButtonListener());
+    }
+    
+    //自定义一个类实现OnClickListener 接口  1
+ /*   private class MyButtonListener implements OnClickListener{
+    	//当按钮被点击的时候调用
+		public void onClick(View view) {
+			callPhone();
+		}
+    }*/
+    
+    //打电话的事件
+    private void callPhone(){
+    	String  number=et_phone.getText().toString();
+    	if("".equals(number)){
+    		Toast.makeText(MainActivity.this, "电话号码不能为空", Toast.LENGTH_SHORT).show();
+    	}else{
+    		//拨打电话  泡妞 打酱油  动作+数据
+    		Intent intent=new Intent();
+    		intent.setAction(intent.ACTION_CALL);//设置动作
+    		intent.setData(Uri.parse("tel:"+number));  //不加tel  可行吗 
+    		startActivity(intent);
+    	}
+    }
+    
+    //第四种方法 在miphone_ui.xml文件中添加触发事件
+    public void onclick(View view){
+    	switch (view.getId()){
+    	case R.id.bt_dail:callPhone();
+    	break;
+    	default: break;
+    	}
+    }
+
+}

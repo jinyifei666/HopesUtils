@@ -1,0 +1,26 @@
+//记得需要加以下权限
+ <uses-permission android:name="android.permission.READ_SMS"/>
+ 哌<uses-permission android:name="android.permission.WRITE_SMS"/>
+    
+    
+    /**
+    * 读取信息
+    */
+    
+    public  void  read_sms(View view){
+    	//ContentResolver是通过URI来查询ContentProvider中提供的数据
+    	ContentResolver resolver = getContentResolver();
+    	Uri uri=Uri.parse("content://sms/");哌
+    	Cursor cursor = resolver.query(uri, null, null, null, null);
+    	while(cursor.moveToNext()){
+    		String body = cursor.getString(cursor.getColumnIndex("body"));
+    		String type = cursor.getString(cursor.getColumnIndex("type"));
+			System.out.println(" 内容:" + body);
+			if ("1".equals(type)) {
+				System.out.println("接收到的短信");
+			} else {
+				System.out.println("发送的短信");
+			}
+		}
+		cursor.close();
+	}

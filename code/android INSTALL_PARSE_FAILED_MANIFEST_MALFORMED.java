@@ -1,0 +1,3 @@
+INSTALL_PARSE_FAILED_MANIFEST_MALFORMED
+
+Nothing, the application was built with a previous version of Google's SDK. In other words, it's old and needs rebuilt with the latest version of the SDK running on the phone. Google just frooze v1 of the SDK like a month ago. Before that the SDK was changing so don't be surprised if stuff won't install. From here forward the public APIs we developers use are frozen but features will be added and bugs fixed.

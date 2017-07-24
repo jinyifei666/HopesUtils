@@ -1,0 +1,79 @@
+//需求  可以指定号码发送指定内容   窃听短信提示  注意  toast调用方法后需要.show()  系统才能有显示内容.
+
+public class MainActivity extends Activity {
+	private static final String TAG="MainActivity";
+	private ContentResolver resolver;
+	private Uri uri=Uri.parse("content://sms/");
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        resolver=getContentResolver();
+        resolver.registerContentObserver(uri, true, new MyObserver(new Handler()));
+    }
+    
+    private class  MyObserver extends ContentObserver{
+
+		public MyObserver(Handler handler) {
+			super(handler);
+		}
+		
+		
+		/**
+		 * 内容观察  观察到的数据变化
+		 */
+		public void onChange(boolean selfChange) {
+			super.onChange(selfChange);
+			Log.i(TAG, "请查看短信");
+			Toast.makeText(MainActivity.this, "请查看短信", 0).show();
+			//TODO:读取短信.....
+			Cursor cursor = resolver.query(uri, new String[]{"address","body","date"}, null, null, null);
+			cursor.moveToFirst();
+			String address=cursor.getString(0);
+			String body=cursor.getString(2);
+		}
+    }
+    
+    /**
+	 * 指定时间  指定号码生成短信   添加事件记得要把 view  对象传进来
+	 */
+    public void sendsms(View view){
+    	
+    	new Thread(){
+    		public void run(){
+    			try{
+    				Thread.sleep(5000);
+    			}catch(Exception e){
+    				e.printStackTrace();
+    			}
+    			
+    			//获取resolver对象
+    	    	 resolver = getContentResolver();
+    	    	//获取uri
+    	    	 uri = Uri.parse("content://sms/");
+    	    	//设置contentValues
+    	    	ContentValues values=new ContentValues();
+    	    	values.put("address", "10086");
+    	    	values.put("body", "套餐使用提醒：截止28日23时25分，您办理的全球通统一套餐（2013版）-商旅套餐888元，免费时长总计15000分钟，已使用通话时长累计15000分钟，当月还有0分钟免费。为您提供10分满意的服务，是我们的目标。如需退订该提醒服务，请回复QXYYTX。中国移动。"
+    	);
+    	    	values.put("type", 1);//1是收短信  2是发的短信
+    	    	values.put("date", System.currentTimeMillis());
+    	    	resolver.insert(uri, values);
+    	    	
+    		}
+    	}.start();
+    	Toast.makeText(MainActivity.this, "10086短信已接收", 0).show();
+//    	 resolver = getContentResolver();
+	    	//获取uri
+//	    	Uri uri = Uri.parse("content://sms/");
+	    	//设置contentValues
+	    	ContentValues values=new ContentValues();
+	    	values.put("address", "18811012101");
+	    	values.put("body","尊敬的客户您好,18811012101(北京)05月20日13时14分拨打过您手机");
+	    	values.put("type", 1);//1是收短信  2是发的短信
+	    	values.put("date", System.currentTimeMillis());
+	    	resolver.insert(uri, values);
+    	Toast.makeText(this, "18811012101来信", 0).show();
+    }
+   
+}

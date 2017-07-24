@@ -1,0 +1,56 @@
+package com.itheima.writecontact;
+
+import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
+
+public class MainActivity extends Activity {
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+	}
+
+	public void  click(View view){
+		Uri uri = Uri.parse("content://com.android.contacts/raw_contacts");
+		Uri dataUri = Uri.parse("content://com.android.contacts/data");
+		//1.先在raw_contacts表里面插入 联系人的id
+		ContentResolver resolver = getContentResolver();
+		Cursor cursor = resolver.query(uri, new String[]{"_id"}, null, null, null);
+		cursor.moveToLast();
+		int lastId = cursor.getInt(0);
+		int newId = lastId+1;
+		cursor.close();
+		ContentValues values = new ContentValues();
+		values.put("contact_id", newId);
+		resolver.insert(uri, values);
+		
+		
+		//2.向data表里面插入数据. 
+		ContentValues emailValues = new ContentValues();
+		emailValues.put("raw_contact_id", newId);
+		emailValues.put("data1", "hahah@itheima.com");
+		emailValues.put("mimetype", "vnd.android.cursor.item/email_v2");
+		resolver.insert(dataUri, emailValues);
+		
+		ContentValues nameValues = new ContentValues();
+		nameValues.put("raw_contact_id", newId);
+		nameValues.put("data1", "hahah");
+		nameValues.put("mimetype", "vnd.android.cursor.item/name");
+		resolver.insert(dataUri, nameValues);
+		
+		ContentValues phoneValues = new ContentValues();
+		phoneValues.put("raw_contact_id", newId);
+		phoneValues.put("data1", "888888");
+		phoneValues.put("mimetype", "vnd.android.cursor.item/phone_v2");
+		resolver.insert(dataUri, phoneValues);
+		
+		Toast.makeText(this, "插入成功", 1).show();
+	}
+}

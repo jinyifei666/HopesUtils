@@ -1,0 +1,47 @@
+Android anim文件对应特效
+
+fade_out    最近任务 下滑状态栏的日期 移除
+
+fade_in      最近任务 下滑状态栏的日期 移除
+
+status_bar_enter      状态栏 移除
+
+status_bar_exitr        状态栏 弹出
+
+wallpaper_open_exit    应用程序退出 前一个页面 移除
+
+wallpaper_open_ente  应用程序退出 前一个页面 弹出
+
+wallpaper_close_exie   应用程序打开 前一个页面 移除
+
+wallpaper_close_enter  应用程序打开 后一个页面 弹出
+
+options_panel_exi      选项菜单 移除
+
+options_panel_enter   选项菜单 弹出
+
+translucent_exit    文本选择光标 移除
+
+translucent_enter   文本选择光标 弹出
+
+toast_exit   提示窗口 移除
+
+toast_enter   提示窗口 弹出
+
+input_method_exit    输入法面板 移除
+
+input_method_enter   输入法面板 弹出
+
+lock_screen_exit   解锁时锁屏窗口 移除
+
+activity_open_exit   活动 退出 前一个页面移除
+
+activity_open_ente   活动 退出 前一个页面进入
+
+activity_close_exit   活动 打开 前一个页面移除
+
+activity_close_enter   活动 打开 前一个页面进入
+
+dialog_exit   窗口 移除
+
+dialog_enter  窗口 弹出哌

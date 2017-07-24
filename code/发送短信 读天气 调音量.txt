@@ -1,0 +1,212 @@
+package com.mi_msg;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.mi_msg.weather.biz.WeatherBiz;
+import com.mi_msg.weather.entity.Channel;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.telephony.SmsManager;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
+import android.widget.Toast;
+/**
+ * 本APP  主要功能有 拨打电话 发送短信  调节电话声音  是否勾选按钮,以及导入天气文件,解析显示
+ * @author lucy
+ *
+ */
+public class MainActivity extends Activity {
+	private EditText et_number;
+	private EditText et_content;
+	private Button bt_dail;
+	private CheckBox cb; //选择框
+	private SeekBar sb; //进度条
+	private SharedPreferences sp;
+
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.mimsg_ui);
+
+		et_number = (EditText) findViewById(R.id.et_number);
+		et_content = (EditText) findViewById(R.id.et_content);
+		bt_dail = (Button) this.findViewById(R.id.bt_dail);
+		cb=(CheckBox) findViewById(R.id.cb_checked);
+		sb=(SeekBar) findViewById(R.id.sb_sound);
+		sp=this.getSharedPreferences("config", MODE_PRIVATE);
+		TextView tv_info=(TextView) findViewById(R.id.tv_info);
+		
+		showWeather(tv_info);
+		
+		boolean isChecked=sp.getBoolean("isChecked", false);
+		cb.setChecked(isChecked);
+		//勾选的时候
+		cb.setOnCheckedChangeListener(new MyOnCheckedChangeListener());
+				int progress=sp.getInt("progeress", 30);
+				sb.setProgress(progress);
+				//移动滑动条的时候
+				sb.setOnSeekBarChangeListener(new MyOnSeekBarChangeListener());
+	}
+	-------------------------------------------------
+	/**
+	 * 把天气显示出来
+	 */
+	public void  showWeather(TextView tv_info){
+		StringBuilder sb =new StringBuilder();
+		try {
+			List<Channel> channels = WeatherBiz.getAllWeatherInfos(this.getClassLoader().getResourceAsStream("weather.xml"));
+			for(Channel channel:channels){
+				sb.append(channel.toString());
+				sb.append("\n");
+			}
+			tv_info.setText(sb);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			Toast.makeText(this, "解析天气失败", 0);
+		}
+	}
+	
+-------------------------------------------------	
+	/**
+	 * 当滑动条改变的时候  
+	 * OnSeekBarChangeListener 实现接口  实现方法
+	 * @author lucy
+	 *
+	 */
+	private class MyOnSeekBarChangeListener implements OnSeekBarChangeListener {
+		public void onProgressChanged(SeekBar seekBar, int progress,
+				boolean fromUser) {
+			Editor editor = sp.edit();
+			editor.putInt("progress", progress);
+			editor.commit();
+		}
+
+		public void onStartTrackingTouch(SeekBar seekBar) {
+		}
+
+		public void onStopTrackingTouch(SeekBar seekBar) {
+		}
+	}
+-------------------------------------------------	
+	/**
+	 * 当选择框被勾选的时候
+	 * 实现OnCheckedChangeListener 接口 ,实现该方法
+	 * @author lucy
+	 *
+	 */
+	private class MyOnCheckedChangeListener implements OnCheckedChangeListener {
+		public void onCheckedChanged(CompoundButton buttonView,
+				boolean isChecked) {
+			Editor editor = sp.edit();
+			editor.putBoolean("isChecked", isChecked);
+			editor.commit();// 提交数据
+		}
+	}
+-------------------------------------------------
+	// 发送短信的方法 发送纯文本信息 也可以发送彩信
+	public void sendSms(View view) {
+		String number = et_number.getText().toString().trim();
+		String content = et_content.getText().toString().trim();
+		
+		if (TextUtils.isEmpty(number) || TextUtils.isEmpty(content)) {
+			Toast.makeText(this, "手机号码或者内容不能为空", 0);
+		} else {
+			// 短信如果超长 自动截取分发
+			SmsManager smsManager = SmsManager.getDefault();
+			ArrayList<String> messages = smsManager.divideMessage(content);
+			for (String message : messages) {
+				smsManager.sendTextMessage(number, null, message, null, null);
+			}
+			Toast.makeText(this, "发送成功", Toast.LENGTH_LONG).show();
+		}
+	}
+-------------------------------------------------
+	//打电话的方法
+	private void callPhone() {
+		String number = et_number.getText().toString();
+		if ("".equals(number)) {
+			Toast.makeText(MainActivity.this, "电话号码不能为空", Toast.LENGTH_SHORT)
+					.show();
+		} else {
+			// 拨打电话 泡妞 打酱油 动作+数据
+			Intent intent = new Intent();
+			intent.setAction(intent.ACTION_CALL);// 设置动作
+			intent.setData(Uri.parse("tel:" + number)); // 不加tel 可行吗
+			startActivity(intent);
+		}
+	}
+	
+	
+	public void call_Phone(View view) {
+		switch (view.getId()) {
+		case R.id.bt_dail:
+			callPhone();
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+
+-------------------------------------------------
+
+天气 weather的业务层代码
+
+public class WeatherBiz {
+	
+	public   static List<Channel> getAllWeatherInfos(InputStream is)throws Exception{
+		
+		List<Channel> channels=null;
+		Channel channel =null;
+		XmlPullParser parser=Xml.newPullParser();
+		parser.setInput(is, "utf-8");
+		
+		int type=parser.getEventType();
+		while (type!=XmlPullParser.END_DOCUMENT){
+			switch(type){
+			case XmlPullParser.START_TAG:
+				if("weather".equals(parser.getName())){
+					channels=new ArrayList<Channel>();
+				}else if("channel".equals(parser.getName())){
+				channel	=new Channel();
+				String id=parser.getAttributeValue(0);
+				channel.setId(Integer.parseInt(id));
+				}else if("city".equals(parser.getName())){
+					String city=parser.nextText();
+					channel.setCity(city);
+				}else if("temp".equals(parser.getName())){
+					String temp=parser.nextText();
+					channel.setTemp(temp);
+				}else if("wind".equals(parser.getName())){
+					String wind=parser.nextText();
+					channel.setWind(wind);
+				}
+				break;
+			case XmlPullParser.END_TAG:
+				if("channel".equals(parser.getName())){
+					channels.add(channel);
+					channel=null;
+				}
+				break;
+			}
+			type=parser.next();
+		}
+		is.close();
+		return channels;
+	}
+}

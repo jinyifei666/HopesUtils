@@ -1,0 +1,1 @@
+android.resource://com.packagename/raw/xxxx

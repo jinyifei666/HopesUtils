@@ -1,0 +1,62 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="AppTheme" parent="android:Theme.Light" />
+	
+   <!-- 文本标题的样式:横向填满 垂直居中 文字颜色 字体 -->
+    <style name="text_title_style">
+        <item name="android:layout_height">45dip</item>
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">18dp</item>
+        <item name="android:textColor">#000000</item>
+    </style>
+    
+    <!-- 文本内容的样式: 横向填满  文本距离本控件左边的距离  垂直居中显示 文字字体-->
+    <style name="text_content_style">
+         <item name="android:paddingLeft">5dip</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">19sp</item>
+    </style>
+    
+    <!-- 在线的样式:横向 纵向全填充 背景图片引用 -->
+    <style name="image_online_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:src">@android:drawable/presence_online</item>
+    </style>
+    
+     <!-- 离线的样式:继承在线样式 并更改背景显示图片 -->
+     <style name="image_offline_style" parent="@style/image_online_style">
+        <item name="android:src">@android:drawable/presence_invisible</item>
+    </style>
+
+     <!-- 下一步按钮的样式:文本距离本控件的四周距离 横向纵向填充 靠近父窗体右下角 背景图片 点击事件 -->
+    <style name="button_next_style">
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingRight">5dip</item>
+        <item name="android:paddingTop">3dip</item>
+        <item name="android:paddingBottom">3dip</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:background">@drawable/selector_btn_green</item>
+        <item name="android:onClick">next</item>
+        <item name="android:drawableRight">@drawable/next</item>
+        <item name="android:text">下一步</item>
+    </style>
+
+    <!-- 继承下一步按钮样式:更改文本内容  点击事件 不靠父窗体右边 清空下一步图片 设置上一步图片 -->
+    <style name="button_pre_style" parent="@style/button_next_style">
+        <item name="android:text">上一步</item>
+        <item name="android:onClick">pre</item>
+        <item name="android:layout_alignParentRight">false</item>
+        <item name="android:drawableRight">@null</item>
+        <item name="android:drawableLeft">@drawable/previous</item>
+    </style>
+    
+    
+</resources>
+

@@ -1,0 +1,41 @@
+package com.example.afinal;
+
+import net.tsz.afinal.FinalHttp;
+import net.tsz.afinal.http.AjaxCallBack;
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends Activity {
+	private TextView tv_status;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		tv_status = (TextView) findViewById(R.id.tv_status);
+	}
+
+	public void click(View view) {
+		// 定义一个finalhttp
+		FinalHttp http = new FinalHttp();
+		// 第一个参数是下载路径 第二个参数是保存路径
+		// 第三个参数是回调
+		http.download("http://192.168.1.104/360.exe",
+				"/mnt/sdcard/haha.exe", new AjaxCallBack() {
+					@Override
+					public void onLoading(long count, long current) {
+						tv_status.setText("下载进度：" + current + "/" + count);
+					}
+
+					@Override
+					public void onSuccess(Object t) {
+						Toast.makeText(getApplicationContext(), "下载成功", 0)
+								.show();
+						super.onSuccess(t);
+					}
+				});
+	}
+}

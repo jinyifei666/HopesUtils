@@ -1,0 +1,287 @@
+//需求 把person  的id  name   phone  显示出来  数据量多,上下可以滑动查阅
+
+主代码
+-----------------------------
+package com.lx.dbsource;
+
+import java.util.List;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.lx.dbsource.dao.PersonDao2s;
+import com.lx.dbsource.domain.Person;
+
+public class MainActivity extends Activity {
+	private ListView lv;
+	private List<Person> persons;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.listv_ui);
+        lv =  (ListView) findViewById(R.id.lv);
+        
+         PersonDao2s dao = new PersonDao2s(this);
+         persons= dao.findAll();
+         
+         lv.setAdapter(new PersonAddapter());
+    }
+    
+    public class PersonAddapter extends BaseAdapter{
+
+		public int getCount() {
+			return persons.size();//控制listview里一共有多少条目
+		}
+		
+		public View getView(int position, View convertView, ViewGroup parent) {
+//			LayoutInflater inflater = LayoutInflater.from(MainActivity.this); //获取系统布局填充的服务
+//			View view = inflater.inflate(R.layout.listv_ui, null);
+			View view = View.inflate(MainActivity.this, R.layout.list_item, null);
+			//获取view对象里的内容  
+			TextView tv_id=(TextView) view.findViewById(R.id.tv_personid);
+			TextView tv_name=(TextView) view.findViewById(R.id.tv_personname);
+			TextView tv_phone=(TextView) view.findViewById(R.id.tv_personphone);
+			
+			Person  person=persons.get(position);
+			tv_id.setText("id:"+person.getId());
+			tv_name.setText(person.getName());
+			tv_phone.setText(person.getPhone());
+			return view;
+		}
+
+		
+		public Object getItem(int position) {
+			return null;
+		}
+
+		public long getItemId(int position) {
+			return 0;
+		}
+
+    	
+    }
+    
+}
+----------------------------------------------
+personHelper 代码
+
+package com.lx.dbsource;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+/**
+ * @description
+ * @date 2013-9-24
+ * @version 1.0
+ * @author Liuxing [c9n9m@163.com]
+ */
+
+public class PersonDBOpenHelper extends SQLiteOpenHelper{
+	
+	private static final String TAG="PersonDBOpenHelper";
+	
+	public PersonDBOpenHelper(Context context) {
+		super(context, "Person.db", null, 2);
+		
+	}
+
+	@Override
+	public void onCreate(SQLiteDatabase db) {
+		Log.i(TAG, "oncreate  数据库创建了");
+		db.execSQL("create table Person   ( id integer primary key autoincrement ,name varchar(20),phone varchar(11))");
+	}
+
+	@Override
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		Log.i(TAG, "onupdate  数据库更新了");
+	}
+
+}
+
+
+---------------------
+和数据库交互的 
+
+
+package com.lx.dbsource.dao;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
+import com.lx.dbsource.PersonDBOpenHelper;
+import com.lx.dbsource.domain.Person;
+
+/**
+ * @description
+ * @date 2013-9-25
+ * @version 1.0
+ * @author Liuxing [c9n9m@163.com]
+ */
+
+public class PersonDao2s {
+	private PersonDBOpenHelper helper;
+	
+	public PersonDao2s(Context context){
+		helper=new PersonDBOpenHelper(context);
+	}
+	
+	//往数据库里添加数据
+	public boolean testAdd(String name,String phone){
+		SQLiteDatabase db = helper.getWritableDatabase();
+		ContentValues values = new ContentValues();
+		values.put("name", name);
+		values.put("phone", phone);
+		long result = db.insert("Person", null, values);
+		db.close();
+		return result!=-1;
+	}
+	//根据参数获取信息
+	public boolean find(String name){
+		SQLiteDatabase db = helper.getReadableDatabase();
+		Cursor cursor = db.query("Person", null, "name=?", new String[]{name}, null, null, null);
+		boolean result = cursor.moveToFirst();
+		db.close();
+		cursor.close();
+		return  result;
+	}
+	
+	//获取所有的信息
+	public  List<Person> findAll(){
+		SQLiteDatabase db = helper.getReadableDatabase();
+		Cursor cursor = db.query("Person", null, null, null, null, null, null);
+		List<Person> persons=new ArrayList<Person>();
+		while(cursor.moveToNext()){
+			int id = cursor.getColumnIndex("id");
+			String name = cursor.getString(cursor.getColumnIndex("name"));
+			String phone = cursor.getString(cursor.getColumnIndex("phone"));
+			Person person = new Person(name,id,phone);
+			persons.add(person);
+		}
+		db.close();
+		cursor.close();
+		return persons;
+	}
+	
+	//修改相关数据
+	public  boolean  update(String name,String newphone){
+		SQLiteDatabase db = helper.getWritableDatabase();
+		ContentValues values = new ContentValues();
+		values.put("phone", newphone);
+		int result = db.update("person", values,"name=", new String[]{name});
+		return  result>0;
+	}
+	
+	//删除相关数据
+		public  boolean  delete(String name){
+			SQLiteDatabase db = helper.getWritableDatabase();
+			ContentValues values = new ContentValues();
+			int result = db.delete("person", "name=?", new String[]{name});
+			return  result>0;
+		}
+}
+-------------另一种原始的方式  数据库交互
+
+package com.lx.dbsource.dao;
+
+import java.util.List;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
+import com.lx.dbsource.PersonDBOpenHelper;
+import com.lx.dbsource.domain.Person;
+
+/**
+ * @description
+ * @date 2013-9-24
+ * @version 1.0
+ * @author Liuxing [c9n9m@163.com]
+ */
+
+public class PersonDao {
+	private PersonDBOpenHelper helper;
+	
+	public PersonDao(Context context){
+		helper=new PersonDBOpenHelper(context);
+	}
+	//添加
+	public void add(String name,String phone){
+		SQLiteDatabase db = helper.getWritableDatabase();
+		db.execSQL("insert into Person (name,phone) values(?,?)",new Object[]{name,phone});
+		db.close();
+	}
+	
+	//删除
+		public void delete(String name){
+			SQLiteDatabase db = helper.getWritableDatabase();
+			db.execSQL("delete from  Person where name=?",new Object[] {name});
+			db.close();
+		}
+		
+		//修改
+		public void update(String name,String newPhone){
+			SQLiteDatabase db = helper.getWritableDatabase();
+			db.execSQL("update Person set phone=? where name=?",new Object[]{newPhone,name});
+			db.close();
+		}
+		
+		//查找
+		public boolean find(String name){
+			SQLiteDatabase db = helper.getWritableDatabase();
+			Cursor 	cursor = db.rawQuery("select * from Person where name=?",new String[]{name});
+			boolean result = cursor.moveToFirst();
+			cursor.close();
+			db.close();
+			return  result;
+		}
+}
+
+
+----------------数据库事务测试
+
+package com.lx.dbsource.test;
+
+import com.lx.dbsource.PersonDBOpenHelper;
+
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.test.AndroidTestCase;
+
+/**
+ * @description
+ * @date 2013-9-25
+ * @version 1.0
+ * @author Liuxing [c9n9m@163.com]
+ */
+
+public class TestDbTransaction extends AndroidTestCase{
+	public void test(){
+		PersonDBOpenHelper helper = new PersonDBOpenHelper(getContext());
+		SQLiteDatabase db = helper.getWritableDatabase();
+		db.beginTransaction();
+		
+		try {
+			db.execSQL("update person set phone = 18889999991 where name='lucy56'");
+			db.execSQL("update person set phone = 18899776666 where name='lucy56'");
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+		}
+		db.close();
+	}
+}

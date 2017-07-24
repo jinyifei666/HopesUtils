@@ -1,0 +1,71 @@
+﻿在通常情况下，为"布局"，"控件"等view设置设置背景,渐变或者有一个特殊等效果都是采用图片和颜色， 但是图片可能会面临被拉伸的风险(也可以9.png来处理解决), 单纯使用颜色要是现实特殊效果难以实现。所以当你想为你的应用是现在炫丽的效果时间, shope是你当仁不让的选择。
+下面总结一下Shape的所有子属性：
+gradient   -- 对应颜色渐变。 startcolor、endcolor就不多说了。 android:angle 是指从哪个角度开始变。
+solid      --  填充。
+stroke   --  描边。
+corners  --  圆角。
+<?xml version="1.0" encoding="utf-8"?>
+<!-- xml图形颜色资源文件:也就是可以让一个形状区域内的颜色实限渐变
+在res下定义一个资源文件夹,比如:drawable,把xml放入其中
+在layout下view中用background引入-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle" ><!---->
+<!--这个表示圆角度为多少-->
+    <corners android:radius="2dip" />
+<!--以下是开始,中间,最后的颜色,通过这个实现颜色渐变-->
+    <gradient
+        android:endColor="#660000DB"
+        android:centerColor="#990000DB"
+        android:startColor="#8484DB" >
+    </gradient>
+<!--这个表示形状内的文字或其它资源边距-->
+    <padding
+        android:bottom="5dip"
+        android:left="3dip"
+        android:right="3dip"
+        android:top="5dip" >
+    </padding>
+<!--这个表示加一个虚线边框-->
+    <stroke
+        android:dashGap="3dip"
+        android:dashWidth="4dip"
+        android:width="1dip"
+        android:color="#000000" >
+    </stroke>
+
+</shape>
+例二:
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient android:startColor="#c0000000"  android:endColor="#c0000000"
+                android:angle="90" /><!--背景颜色渐变 -->
+	<solid android:color="#00ffffff" /><!-- 背景的填充颜色 -->
+	<stroke android:width="3dp" color="#ff000000" /><!-- 描边，width是边得宽度，color是颜色 -->
+	<corners android:radius="10dp" /><!-- 边角圆弧的半径 -->
+	<padding 
+		android:left="3dp"
+		android:top="3dp" 
+		android:right="3dp"
+		android:bottom="3dp" /><!-- 四周留出来的空白 -->
+</shape>
+给不同的view设置shape，可以实现边白和圆角的效果，类似于系统自带的对话框！ 
+就是自定义实现和系统自带相同效果的view。 
+例如： 
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:background="@drawable/rounded_menu_out">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+	android:background="@drawable/rounded_ignore">
+	<GridView android:id="@+id/menu_more_window"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:numColumns="4"
+		android:stretchMode="columnWidth"
+		android:gravity="center" />    
+</LinearLayout>
+</LinearLayout>

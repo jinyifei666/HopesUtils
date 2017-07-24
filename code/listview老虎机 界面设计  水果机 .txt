@@ -1,0 +1,78 @@
+//需求  并排同时显示几种数据   无穷无尽的上下显示
+
+package com.lx.fruit;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+public class MainActivity extends Activity {
+	private ListView lv;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.fruit_ui);
+         lv=(ListView) findViewById(R.id.lv);
+         lv.setAdapter(new MyAddapter());
+        
+    }
+    
+    private class MyAddapter extends BaseAdapter{
+
+		public int getCount() {
+			return Integer.MAX_VALUE;
+		}
+		
+		public View getView(int position, View convertView, ViewGroup parent) {
+			TextView tv=null;
+			if(position%3==0){
+				tv=new TextView(MainActivity.this);
+				tv.setText("青苹果------红苹果");
+			}else if(position%3==1){
+				tv=new TextView(MainActivity.this);
+				tv.setText("红葡萄------黑葡萄");
+			}else if(position%3==2){
+				tv=new TextView(MainActivity.this);
+				tv.setText("黄香蕉------绿香蕉");
+			}
+			return tv;
+		}
+
+		public Object getItem(int position) {
+			return null;
+		}
+
+		public long getItemId(int position) {
+			return 0;
+		}
+
+		
+    	
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_main, menu);
+        return true;
+    }
+}
+
+
+-----------------
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ListView
+        android:id="@+id/lv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    </ListView>
+
+</RelativeLayout>

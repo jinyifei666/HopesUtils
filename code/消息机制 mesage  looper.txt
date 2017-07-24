@@ -1,0 +1,44 @@
+public class MainActivity extends Activity {
+
+	// 1.在主线程创建一个handler 消息处理器
+	private Handler handler = new Handler() {
+
+		// 处理消息的方法
+		public void handleMessage(android.os.Message msg) {
+			// 3.消息放在消息队列里面之后,会被轮询器给取出来,调用handlemessage的方法处理这个消息
+			// 这个代码 是在主线程里面运行的.
+			int i = (Integer) msg.obj;
+			tv.setText("当前进度:"+i);
+		};
+
+	};
+	private TextView tv;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		
+		getMainLooper();
+		
+		tv = (TextView) findViewById(R.id.tv);
+		new Thread() {
+			public void run() {
+				for (int i = 0; i < 100; i++) {
+					// 2.利用主线程的handler发送一条消息,消息会放在消息队列里面
+					Message msg = new Message();
+					msg.obj = i;
+					handler.sendMessage(msg);
+//					tv.setText("当前进度:"+i);
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			};
+		}.start();
+
+	}
+
+}

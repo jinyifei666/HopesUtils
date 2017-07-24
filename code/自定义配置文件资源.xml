@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--这个的作用是:一旦定义好后就会在R.java中生成引用:放入res下的values文件夹下
+在Activity就可以R.string.serverurl引入-->
+<resources>
+    <string name="serverurl">http://192.168.1.2:8080/update.xml</string>
+</resources>

@@ -1,0 +1,2 @@
+android:singleLine="true"  表示只一行
+ android:lineSpacingExtra="3dp"//表示行间距3个dip

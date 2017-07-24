@@ -1,0 +1,128 @@
+package com.htmlresource_scan;
+
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.TextUtils;
+import android.view.View;
+import android.webkit.URLUtil;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends Activity {
+	protected static final int ERROR=1;
+	protected static final int SHOW_HTML=2;
+	private TextView tv_htmlcontent;
+	private EditText et_path;
+	private Handler handler=new Handler(){
+		public void handleMessage(Message msg) {
+			switch(msg.what){
+			case ERROR:Toast.makeText(MainActivity.this, "获取html源文件失败", 0).show();
+			break;
+			case SHOW_HTML:String body=(String) msg.obj;
+			tv_htmlcontent.setText(body);
+			break;
+			}
+		};
+		
+	};
+   
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+       tv_htmlcontent= (TextView) findViewById(R.id.tv_htmlcontent);
+       et_path=(EditText) findViewById(R.id.et_path);
+    }
+    
+    //点击事件 
+     public void onclick(View view){
+    	 final String path=et_path.getText().toString().trim();
+    	 if(TextUtils.isEmpty(path)){
+    		 Toast.makeText(this, "路径不能为空", 0).show();
+    		 return;
+    	 }else{
+    		 //联网  开启线程
+    		 new  Thread(){
+    			 public void run(){
+    				 try{
+    					 URL url=new URL(path);
+    					 //获取URL  强制转型
+    				HttpURLConnection conn=	 (HttpURLConnection) url.openConnection();
+    				conn.setRequestMethod("GET"); //记住这个要大写的  POST  GET
+    				conn.setConnectTimeout(5000);//设置超时时间  5秒
+    				int code=conn.getResponseCode(); //获取响应码
+    				if(code==200){
+    					InputStream ins = conn.getInputStream();
+    					String body=StreamUtils.readStream(ins);//把流转换成 字符串
+    					Message msg=Message.obtain();
+    					msg.obj=body;
+    					msg.what=SHOW_HTML;
+    					handler.sendMessage(msg);
+    				}else{
+    					Message msg=Message.obtain();
+    					msg.what=ERROR;
+    					handler.sendMessage(msg);
+    				}
+    				 }catch (Exception e) {
+    					 e.printStackTrace();
+    					 Message msg=Message.obtain();
+    					 msg.what=ERROR;
+    					 handler.sendMessage(msg);
+					}
+    			 };
+    		 }.start();
+    	 }
+     }
+
+  
+}
+
+------streamUtils
+
+package com.htmlresource_scan;
+
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+
+import org.apache.http.util.ByteArrayBuffer;
+
+/**
+ * @description
+ * @date 2013-9-26
+ * @version 1.0
+ * @author Liuxing [c9n9m@163.com]
+ */
+
+/**
+ * 把一个流转换成 字符串的形式  工具类
+ * @author lucy
+ *
+ */
+
+public class StreamUtils {
+	public static String readStream(InputStream ins){
+		try{
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			int len=0;
+			byte[] buffer=new byte[1024];
+			while((len=ins.read(buffer))!=-1){
+				baos.write(buffer,0,len);
+			}
+			ins.close();
+			baos.close();
+			
+			byte[] result=baos.toByteArray();
+			return new String(result,"utf-8");
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+}

@@ -1,0 +1,125 @@
+package com.read_image;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+public class MainActivity extends Activity {
+	protected static final int SET_IMAGE=1;
+	protected static final int ERROR=2;
+	private static final String TAG="MainActivity";
+	
+	private EditText et_path;
+	private ImageView iv_imag;
+	
+	//创建消息处理器
+	private Handler handler=new Handler(){
+
+		public void handleMessage(Message msg) {
+			switch(msg.what){
+			case SET_IMAGE:Bitmap bitmap=(Bitmap)msg.obj;
+			iv_imag.setImageBitmap(bitmap);
+			break;
+			case ERROR:Toast.makeText(MainActivity.this, "获取图片失败", 0).show();
+			break;
+			}
+		}
+		
+	};
+	
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        et_path=(EditText) findViewById(R.id.et_path);
+       iv_imag= (ImageView) findViewById(R.id.iv_img);
+    }
+
+   //按钮 单击事件
+    public  void  click(View view){
+    	final String path=et_path.getText().toString().trim();
+    			if(TextUtils.isEmpty(path)){
+    				Toast.makeText(this, "图片路径不能为空", 0).show();
+    				return ;
+    			}else{
+    				//查看图片的时候先检查缓存里是否有
+    				File file=new File(getCacheDir(),getFileName(path));
+    				if(file.exists()&&file.length()>0){
+    					//加载缓存图片
+    					Log.i(TAG, "加载缓存图片");
+    					iv_imag.setImageURI(Uri.fromFile(file));
+    				}else{
+    					Log.i(TAG, "下载新图片,并且缓存");
+    					new Thread(){
+    						public void run(){
+    							try{
+    								URL url = new URL(path);
+    								HttpURLConnection conn=(HttpURLConnection) url.openConnection();
+    								conn.setRequestMethod("GET");
+    								conn.setConnectTimeout(5000);
+    								// conn.setReadTimeout(5000);
+    								// 原因: 访问网络 耗时的操作 需要一定的时间 为了避免界面卡死 无响应 4.0系统做了一个处理
+    								// 所有的网络访问的操作 是不可以在主线程里面执行.
+    								conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET4.0C; .NET4.0E; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729; Shuame)");
+    								
+    								int code=conn.getResponseCode();
+    								if(code==200){
+    									//得到服务器返回的输入流
+    									InputStream is = conn.getInputStream();
+    									File file=new File(getCacheDir(),getFileName(path));
+    									FileOutputStream fos=new FileOutputStream(file);
+    									byte[] buffer=new byte[1024];
+    									int len=0;
+    									while((len=is.read(buffer))!=-1){
+    										fos.write(buffer,0,len);
+    									}
+    									is.close();
+    									fos.close();
+    									
+    								Bitmap bitmap=	BitmapFactory.decodeFile(file.getAbsolutePath()	);
+//    								iv_imag.setImageBitmap(bitmap);
+    								//在子线程里面需要更新ui   通知主线程更新以下  UI
+    							Message msg=new Message();
+    							msg.what=SET_IMAGE;
+    							msg.obj=bitmap;
+    							handler.sendMessage(msg);
+    								}else{
+//    									Toast.makeText(MainActivity.this, "获取图片失败", 0).show();
+    									Message msg = new Message();
+    									msg.what = ERROR;
+    									handler.sendMessage(msg);
+    								}
+    							}catch(Exception e){
+    								Message msg = new Message();
+    								msg.what=ERROR;
+    								handler.sendMessage(msg);
+    								e.printStackTrace();
+    							}
+    						};
+    					}.start();
+    				}
+    			}
+    }
+    
+    //获取图片的名称
+    public String  getFileName(String path){
+    	int start=path.lastIndexOf("/")+1;
+    	return path.substring(start);
+    }
+}

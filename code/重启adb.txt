@@ -1,0 +1,4 @@
+﻿tasklist和tskill。tasklist能列出所有的进程，和相应的信息。tskill能查杀进程，语法很简单：tskill 程序名！！
+如:tskill qq--注意:不要后缀
+adb kill-server
+adb start-server 

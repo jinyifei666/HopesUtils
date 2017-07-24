@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--这个的作用是:实现不同状态下颜色的颜色显示:在res下定义一个资源文件夹,比如:drawable,把xml放入其中
+在layout下view中用background引入-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/bind_bg_pressed" android:state_pressed="true"/><!--当被按下时-->
+    <item android:drawable="@drawable/bind_bg_pressed" android:state_focused="true"/><!--当获得焦点时-->
+    <item android:drawable="@drawable/bind_bg_pressed" android:state_selected="true"/><!--当被选择时-->
+    <item android:drawable="@drawable/bind_bg_normal"/><!--普通状态下-->
+
+</selector>

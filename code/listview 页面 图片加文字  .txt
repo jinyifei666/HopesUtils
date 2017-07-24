@@ -1,0 +1,215 @@
+//需求  在页面左边显示美女的头像 右边显示美女的编号 
+
+//主要需要2个布局 一个主布局  另外一个listview
+
+主代码:
+--------------------------
+package com.listv_ico;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+
+public class MainActivity extends Activity {
+	private  ListView lv;
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        lv=(ListView) findViewById(R.id.lv);
+        
+        List<Map<String,Object>> data=new ArrayList<Map<String,Object>>();
+      
+        
+        Map<String,Object> item1= new HashMap<String, Object>();
+        item1.put("icon", R.drawable.a1);
+        item1.put("name", "1号美女");
+        
+        Map<String,Object> item2= new HashMap<String, Object>();
+        item2.put("icon", R.drawable.a2);
+        item2.put("name", "2号美女");
+        
+        
+        Map<String,Object> item3= new HashMap<String, Object>();
+        item3.put("icon", R.drawable.a3);
+        item3.put("name", "3号美女");
+        
+        Map<String,Object> item4= new HashMap<String, Object>();
+        item4.put("icon", R.drawable.a4);
+        item4.put("name", "4号美女");
+        
+
+        Map<String,Object> item5= new HashMap<String, Object>();
+        item5.put("icon", R.drawable.a5);
+        item5.put("name", "5号美女");
+        
+        Map<String,Object> item6= new HashMap<String, Object>();
+        item6.put("icon", R.drawable.a6);
+        item6.put("name", "6号美女");
+        
+        
+        Map<String,Object> item7= new HashMap<String, Object>();
+        item7.put("icon", R.drawable.a7);
+        item7.put("name", "7号美女");
+        
+        Map<String,Object> item8= new HashMap<String, Object>();
+        item8.put("icon", R.drawable.a8);
+        item8.put("name", "8号美女");
+        
+
+        Map<String,Object> item9= new HashMap<String, Object>();
+        item9.put("icon", R.drawable.a9);
+        item9.put("name", "9号美女");
+        
+        Map<String,Object> item10= new HashMap<String, Object>();
+        item10.put("icon", R.drawable.a10);
+        item10.put("name", "10号美女");
+        
+        
+        Map<String,Object> item11= new HashMap<String, Object>();
+        item11.put("icon", R.drawable.a11);
+        item11.put("name", "11号美女");
+        
+        Map<String,Object> item12= new HashMap<String, Object>();
+        item12.put("icon", R.drawable.a12);
+        item12.put("name", "12号美女");
+        
+        Map<String,Object> item13= new HashMap<String, Object>();
+        item13.put("icon", R.drawable.a13);
+        item13.put("name", "13号美女");
+        
+        Map<String,Object> item14= new HashMap<String, Object>();
+        item14.put("icon", R.drawable.a14);
+        item14.put("name", "14号美女");
+        
+        Map<String,Object> item15= new HashMap<String, Object>();
+        item15.put("icon", R.drawable.a14);
+        item15.put("name", "15号美女");
+        
+        Map<String,Object> item16= new HashMap<String, Object>();
+        item16.put("icon", R.drawable.a12);
+        item16.put("name", "16号美女");
+        
+        Map<String,Object> item21= new HashMap<String, Object>();
+        item21.put("icon", R.drawable.a1);
+        item21.put("name", "21号美女");
+        
+        Map<String,Object> item22= new HashMap<String, Object>();
+        item22.put("icon", R.drawable.a2);
+        item22.put("name", "22号美女");
+        
+        
+        Map<String,Object> item23= new HashMap<String, Object>();
+        item23.put("icon", R.drawable.a3);
+        item23.put("name", "23号美女");
+        
+        Map<String,Object> item24= new HashMap<String, Object>();
+        item24.put("icon", R.drawable.a4);
+        item24.put("name", "24号美女");
+        
+
+        Map<String,Object> item25= new HashMap<String, Object>();
+        item25.put("icon", R.drawable.a5);
+        item25.put("name", "25号美女");
+        
+        Map<String,Object> item26= new HashMap<String, Object>();
+        item26.put("icon", R.drawable.a6);
+        item26.put("name", "26号美女");
+        
+        
+        Map<String,Object> item27= new HashMap<String, Object>();
+        item27.put("icon", R.drawable.a7);
+        item27.put("name", "27号美女");
+        
+        Map<String,Object> item28= new HashMap<String, Object>();
+        item28.put("icon", R.drawable.a8);
+        item28.put("name", "28号美女");
+        
+
+        Map<String,Object> item29= new HashMap<String, Object>();
+        item29.put("icon", R.drawable.a9);
+        item29.put("name", "29号美女");
+        
+        
+        data.add(item1);
+        data.add(item2);
+        data.add(item3);
+        data.add(item4);
+        data.add(item5);
+        data.add(item6);
+        data.add(item7);
+        data.add(item8);
+        data.add(item9);
+        data.add(item10);
+        data.add(item11);
+        data.add(item12);
+        data.add(item13);
+        data.add(item14);
+        data.add(item15);
+        data.add(item16);
+        data.add(item21);
+        data.add(item22);
+        data.add(item23);
+        data.add(item24);
+        data.add(item25);
+        data.add(item26);
+        data.add(item27);
+        data.add(item28);
+        data.add(item29);
+        
+        lv.setAdapter(new SimpleAdapter(this, data, R.layout.lay_out, new String[]{"icon","name"}, new int[]{R.id.iv_item,R.id.tv_item}));
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_main, menu);
+        return true;
+    }
+}
+
+
+----------------主的布局 xml文件如下
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    tools:context=".MainActivity">
+
+    <ListView
+        android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+         android:id="@+id/lv"/>
+
+</RelativeLayout>
+
+---------------分的布局  xml文件如下
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    
+    <ImageView
+        android:src="@drawable/a1"
+        android:id="@+id/iv_item"
+        android:layout_width="30dip"
+        android:layout_height="30dip" />
+
+    <TextView
+        android:id="@+id/tv_item"
+        android:layout_marginLeft="5dip"
+        android:layout_marginTop="2dip"
+        android:text="美女1"
+        android:textSize="20sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+
+</LinearLayout>

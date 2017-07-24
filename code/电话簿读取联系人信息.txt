@@ -1,0 +1,194 @@
+//  读取联系人信息   //添加读取联系人权限 READ_CONTACT  permission
+--------主方法
+
+package com.read_contact;
+
+import java.util.List;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.read_contact.domain.ContactInfo;
+import com.read_contact.service.ContactInfoProvider;
+
+public class MainActivity extends Activity {
+		private ListView lv;
+		private List<ContactInfo> contactInfos;
+
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        lv=(ListView) findViewById(R.id.lv_contact);
+        
+        //获取全部的联系人
+        
+        contactInfos= ContactInfoProvider.getContactInfos(this);
+        lv.setAdapter(new ContactAdapter());
+    }
+
+   
+    private class  ContactAdapter extends BaseAdapter{
+    	
+    	public int getCount() {
+			return contactInfos.size();
+		}
+    	
+    	public View getView(int position, View convertView, ViewGroup parent) {
+    		View view = View.inflate(MainActivity.this, R.layout.contact_list, null);
+    		TextView tv_email=(TextView) view.findViewById(R.id.tv_email);
+    		TextView tv_name=(TextView) view.findViewById(R.id.tv_name);
+    		TextView tv_phone=(TextView) view.findViewById(R.id.tv_phone);
+    		
+    		ContactInfo info=contactInfos.get(position);
+    		
+    		tv_email.setText("邮箱:"+info.getEmail());
+    		tv_phone.setText(info.getPhone());
+    		tv_name.setText(info.getName());
+    		
+    		return view;
+    	}
+		
+
+		public Object getItem(int position) {
+			return null;
+		}
+
+		public long getItemId(int position) {
+			return 0;
+		}
+
+    	
+    }
+}
+
+
+-----------------内容提供者
+
+package com.read_contact.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.ContentResolver;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+
+import com.read_contact.domain.ContactInfo;
+
+/**
+ * @description
+ * @date 2013-9-26
+ * @version 1.0
+ * @author Liuxing [c9n9m@163.com]
+ */
+
+public class ContactInfoProvider {
+	/**
+	 * 获取系统的联系人  
+	 */
+	public  static List<ContactInfo> getContactInfos(Context context){
+		//首先得到内容解析者
+		ContentResolver resolver = context.getContentResolver();
+		//查询raw_contacts  表 获取所有的联系人ID
+		Uri uri = Uri.parse("content://com.android.contacts/raw_contacts");
+		Uri dataUri = Uri.parse("content://com.android.contacts/data");
+		//获取raw_contacts  表的查询 光标 结果集
+		Cursor cursor = resolver.query(uri, new String[]{"contact_id"}, null, null, null);
+		List<ContactInfo> contactInfos=new ArrayList<ContactInfo>();
+		while(cursor.moveToNext()){
+			String id=cursor.getString(0);
+			//根据联系人的ID  查询联系人的数据 查询data 表
+			if(id!=null){
+				ContactInfo contactInfo=new ContactInfo();
+				Cursor cursorData = resolver.query(dataUri, null, "raw_contact_id=?", new String[]{id}, null);
+				while(cursorData.moveToNext()){
+					String data1=cursorData.getString(cursorData.getColumnIndex("data1"));
+					String mimetype = cursorData.getString(cursorData.getColumnIndex("mimetype"));
+					
+					if("vnd.android.cursor.item/email_v2".equals(mimetype)){
+						contactInfo.setEmail(data1);
+					}else if ("vnd.android.cursor.item/name".equals(mimetype)) {
+						contactInfo.setName(data1);
+					} else if ("vnd.android.cursor.item/phone_v2"
+							.equals(mimetype)) {
+						contactInfo.setPhone(data1);
+					}
+				}
+				cursorData.close();
+				contactInfos.add(contactInfo);
+				contactInfo=null;
+			}
+			
+		}
+		cursor.close();
+		return contactInfos;
+	}
+}
+
+-----主布局文件  
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ListView
+        android:id="@+id/lv_contact"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    </ListView>
+
+</RelativeLayout>
+
+
+-----------------布局文件  contactList.cml
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/textView2"
+        android:layout_centerHorizontal="true"
+        android:src="@android:drawable/stat_sys_vp_phone_call" />
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="姓名" />
+
+    <TextView
+        android:id="@+id/tv_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/imageView1"
+        android:layout_toRightOf="@+id/imageView1"
+        android:text="电话" />
+
+    <TextView
+        android:id="@+id/tv_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tv_name"
+        android:layout_marginTop="15dp"
+        android:text="邮箱" />
+
+</RelativeLayout>
+
+
+

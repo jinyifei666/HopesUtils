@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--在res下定义一个anim文件夹,在里面定义动画资源,下面这个例子是表示切换Activity用的
+fromXDelta表示x轴从哪里开始,toXDelta表示x轴要到哪里,100%p表示的是屏幕整个长度,这样就可以避免屏幕适配的问题.
+注:在屏幕中,都是以左上角为(0,0)原点坐标的
+定义好后就可以在代码中以比如:overridePendingTransition(R.anim.tran_next_in, R.anim.tran_next_out);这样方式引入了-->
+<translate
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromXDelta="100%p"
+    android:toXDelta="0"
+    android:fromYDelta="0"
+    android:toYDelta="0"
+    android:duration="300"
+    >
+</translate>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+     <declare-styleable name="setting_view_style">
+         <attr name="title" format="string"></attr>
+         <attr name="checked_text" format="string"></attr>
+         <attr name="unchecked_text" format="string"></attr>
+     </declare-styleable>
+</resources>

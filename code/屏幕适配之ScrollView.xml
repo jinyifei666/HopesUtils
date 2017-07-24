@@ -1,0 +1,45 @@
+屏幕之适配ScrollView,当包裹的view超过屏幕时,可以让里面的view滑动显示.
+但注意:<ScrollView>只能包裹一个Layout,所以如果里面有多个layout那么就用一个大的layout再包裹下
+<ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+		android:scrollbars="none" <--看需不需要滚动条,none表示不滚动,horizontal水平和vertical束直-->
+		>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="40.0dip" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dip"
+                    android:layout_marginTop="8dip"
+                    android:text="安全号码"
+                    android:textSize="18sp" />             
+            </RelativeLayout>
+           
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dip"
+                android:layout_marginTop="10dip"
+                android:orientation="horizontal" >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="5dip"
+                    android:src="@android:drawable/btn_star_big_on" />
+                <TextView
+                    style="@style/text_content_style"
+                    android:paddingTop="5dip"
+                    android:text="GPS追踪: #*location*#" />
+            </LinearLayout>    
+			
+        </LinearLayout>
+    </ScrollView>

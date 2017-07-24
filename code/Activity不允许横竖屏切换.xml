@@ -1,0 +1,5 @@
+Activity不允许横竖屏切换
+ <activity
+	android:configChanges="orientation"//默认束屏
+	android:screenOrientation="landscape"//不允许横束屏切换
+	 >
