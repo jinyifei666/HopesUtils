@@ -1,4 +1,4 @@
-# YrishUtils，安卓常见问题处理集合及工具类
+# HopesUtils，安卓常见问题处理集合及工具类
 
 --Activity不允许横竖屏切换
 
